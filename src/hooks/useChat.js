@@ -4,7 +4,7 @@ import { queryLaborConsultant } from "../services/antigravity";
 const WELCOME_MESSAGE = {
   id: "welcome",
   sender: "bot",
-  text: "¡Hola! Soy **HR Legal Assistant**, tu asistente virtual especializado exclusivamente en el Código de Trabajo. 💼\n\n¿En qué te puedo asesorar hoy? Puedes consultarme sobre tus vacaciones, horas extra, aguinaldo, incapacidades, licencias de maternidad o causales de despido. Recuerda que solo respondo preguntas basadas en la legislación laboral vigente.",
+  text: "¡Hola! 👋 Soy **HR Legal Assistant**, tu asistente virtual de Recursos Humanos especializado en el **Código de Trabajo**.\n\nEstoy aquí para orientarte sobre tus derechos y obligaciones laborales con base en la legislación vigente. Puedes consultarme sobre:\n\n- 🌴 **Vacaciones** y días de descanso\n- ⏰ **Jornadas laborales** y horas extra\n- 💰 **Salario, aguinaldo** y liquidaciones\n- 🏥 **Permisos e incapacidades**\n- 👶 **Maternidad y paternidad**\n- 📄 **Contratos y causales de despido**\n\n¿Cuál es tu consulta laboral hoy?",
   timestamp: new Date().toISOString()
 };
 
@@ -35,7 +35,8 @@ export const useChat = () => {
         timestamp: new Date().toISOString(),
         metadata: {
           matchedTopicId: response.matchedTopicId,
-          article: response.article
+          article: response.article,
+          escalated: response.escalated || false
         }
       };
 
@@ -62,11 +63,12 @@ export const useChat = () => {
   }, []);
 
   const quickReplies = [
-    { text: "¿Cuántos días de vacaciones me corresponden?", label: "🌴 Vacaciones" },
-    { text: "¿Cómo se pagan las horas extra?", label: "⏰ Horas Extra" },
-    { text: "¿Cómo se calcula mi aguinaldo?", label: "🎁 Aguinaldo" },
-    { text: "¿Cuáles son mis derechos ante un despido?", label: "📄 Liquidación" },
-    { text: "¿Cómo reporto acoso o maltrato laboral?", label: "🛡️ Reportar Acoso" }
+    { text: "¿Cuántos días de vacaciones me corresponden?",          label: "Vacaciones" },
+    { text: "¿Cómo se pagan las horas extra?",                       label: "Horas Extra" },
+    { text: "¿Cómo se calcula mi aguinaldo?",                        label: "Aguinaldo" },
+    { text: "¿Cuáles son mis derechos ante un despido sin justa causa?", label: "Despido" },
+    { text: "¿Cuáles son mis derechos por licencia de maternidad?",  label: "Maternidad" },
+    { text: "¿Cuántas horas diarias puede durar mi jornada de trabajo?", label: "Jornada" }
   ];
 
   return {

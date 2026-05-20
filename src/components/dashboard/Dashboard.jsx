@@ -217,7 +217,8 @@ export const Dashboard = () => {
       {/* 4. Banner consolidado de Alertas de Prioridad */}
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          ⚠️ Plan de Atención Prioritario
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "var(--color-warning)", display: "inline-block", flexShrink: 0 }} />
+          Plan de Atencion Prioritario
         </h3>
         <AlertsBanner alerts={alerts} />
       </div>
@@ -268,10 +269,11 @@ export const Dashboard = () => {
                 padding: "0.35rem 0.75rem", 
                 fontSize: "0.75rem", 
                 borderRadius: "8px",
-                borderColor: commentFilter !== "critical" && recentComments.some(c => c.isCritical) ? "var(--color-danger)" : "var(--border-color)"
+                borderColor: commentFilter !== "critical" && recentComments.some(c => c.isCritical) ? "var(--color-danger)" : "var(--border-color)",
+                color: commentFilter !== "critical" && recentComments.some(c => c.isCritical) ? "var(--color-danger)" : undefined
               }}
             >
-              🚨 Alertas Éticas ({recentComments.filter(c => c.isCritical).length})
+              Alertas Eticas ({recentComments.filter(c => c.isCritical).length})
             </button>
             {getUniqueDeptsWithComments.map((dept) => (
               <button
@@ -325,14 +327,15 @@ export const Dashboard = () => {
                       <span style={{ fontWeight: 700, color: "white" }}>{c.department}</span>
                       {c.isCritical && (
                         <span style={{
-                          background: "var(--color-danger)",
-                          color: "white",
-                          padding: "0.1rem 0.35rem",
+                          background: "rgba(244,63,94,0.15)",
+                          border: "1px solid rgba(244,63,94,0.3)",
+                          color: "#f43f5e",
+                          padding: "0.1rem 0.4rem",
                           borderRadius: "4px",
-                          fontSize: "0.6rem",
+                          fontSize: "0.62rem",
                           fontWeight: 700
                         }}>
-                          🚨 {c.alertType || "CRÍTICO"}
+                          {c.alertType || "GRAVE"}
                         </span>
                       )}
                     </div>

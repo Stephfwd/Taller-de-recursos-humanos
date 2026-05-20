@@ -2,7 +2,7 @@ import React from "react";
 import { useSurvey } from "../../hooks/useSurvey";
 import { surveyQuestions, departments } from "../../data/surveyQuestions";
 import SurveyProgress from "./SurveyProgress";
-import { Heart, ChevronLeft, ChevronRight, CheckCircle, Send, Users } from "lucide-react";
+import { ClipboardList, ChevronLeft, ChevronRight, CheckCircle, Send, Users } from "lucide-react";
 
 export const ClimateChatbot = () => {
   const {
@@ -23,21 +23,18 @@ export const ClimateChatbot = () => {
 
   const currentQuestion = surveyQuestions[currentStep - 1];
 
+  // Sin emojis — cada opción tiene color semántico y texto corto para el badge
   const ratingOptions = [
-    { value: 1, label: "Totalmente en desacuerdo", emoji: "😠", color: "#f43f5e" },
-    { value: 2, label: "En desacuerdo", emoji: "🙁", color: "#f59e0b" },
-    { value: 3, label: "Neutral", emoji: "😐", color: "#9ca3af" },
-    { value: 4, label: "De acuerdo", emoji: "🙂", color: "#10b981" },
-    { value: 5, label: "Totalmente de acuerdo", emoji: "😍", color: "#0ea5e9" }
+    { value: 1, label: "Totalmente en desacuerdo", shortLabel: "Muy mal",    color: "#f43f5e", textColor: "#fda4af" },
+    { value: 2, label: "En desacuerdo",            shortLabel: "Mal",        color: "#f59e0b", textColor: "#fcd34d" },
+    { value: 3, label: "Neutral",                  shortLabel: "Regular",    color: "#6b7280", textColor: "#d1d5db" },
+    { value: 4, label: "De acuerdo",               shortLabel: "Bien",       color: "#10b981", textColor: "#6ee7b7" },
+    { value: 5, label: "Totalmente de acuerdo",    shortLabel: "Muy bien",   color: "#0ea5e9", textColor: "#7dd3fc" }
   ];
 
-  // Manejar el click de una opción de respuesta
   const handleRatingSelect = (val) => {
     answerQuestion(currentQuestion.id, val);
-    // Pequeño retraso antes de avanzar para ver la selección
-    setTimeout(() => {
-      nextStep();
-    }, 250);
+    setTimeout(() => { nextStep(); }, 250);
   };
 
   return (
@@ -51,48 +48,41 @@ export const ClimateChatbot = () => {
       justifyContent: "space-between",
       position: "relative"
     }}>
-      
-      {/* 1. Pantalla de Bienvenida / Selección de Departamento */}
+
+      {/* ── 1. Selección de departamento ─────────────────────────────── */}
       {currentStep === 0 && (
         <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <div style={{ textAlign: "center", marginBottom: "1rem" }}>
             <div style={{
-              width: "60px",
-              height: "60px",
-              borderRadius: "50%",
+              width: "60px", height: "60px", borderRadius: "14px",
               background: "linear-gradient(135deg, var(--color-primary), #8b5cf6)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              display: "flex", alignItems: "center", justifyContent: "center",
               margin: "0 auto 1.25rem",
               boxShadow: "0 8px 24px rgba(99, 102, 241, 0.3)"
             }}>
-              <Heart size={28} color="white" />
+              <ClipboardList size={28} color="white" />
             </div>
             <h2 style={{ fontSize: "1.75rem", fontWeight: 800 }} className="gradient-text-indigo">
               Encuesta de Clima Laboral
             </h2>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", marginTop: "0.5rem" }}>
-              Tu opinión es muy valiosa para construir un mejor lugar de trabajo. Esta encuesta es <strong>100% anónima</strong> y confidencial.
+              Tu opinión es muy valiosa para construir un mejor lugar de trabajo.
+              Esta encuesta es <strong>100% anónima</strong> y confidencial.
             </p>
           </div>
 
           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1.5rem" }}>
             <h4 style={{ fontSize: "1rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Users size={16} /> Selecciona tu Departamento para iniciar:
+              <Users size={16} /> Selecciona tu departamento para iniciar:
             </h4>
-            <div style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem"
-            }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {departments.map((dept) => (
                 <button
                   key={dept}
                   onClick={() => selectDepartment(dept)}
                   className="dept-btn"
                   style={{
-                    padding: "1rem 1.25rem",
+                    padding: "0.9rem 1.25rem",
                     borderRadius: "12px",
                     background: "rgba(255,255,255,0.02)",
                     border: "1px solid var(--border-color)",
@@ -101,10 +91,14 @@ export const ClimateChatbot = () => {
                     fontWeight: 600,
                     textAlign: "left",
                     cursor: "pointer",
-                    transition: "all var(--transition-fast)"
+                    transition: "all var(--transition-fast)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between"
                   }}
                 >
                   {dept}
+                  <ChevronRight size={15} style={{ color: "var(--text-muted)" }} />
                 </button>
               ))}
             </div>
@@ -112,47 +106,47 @@ export const ClimateChatbot = () => {
         </div>
       )}
 
-      {/* 2. Preguntas de la Encuesta */}
+      {/* ── 2. Preguntas ─────────────────────────────────────────────── */}
       {currentStep >= 1 && currentStep <= totalQuestions && currentQuestion && (
         <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", flexGrow: 1 }}>
-          {/* Cabecera de pregunta */}
+
+          {/* Progreso + categoría */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <SurveyProgress current={currentStep} total={totalQuestions} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{
                 background: "rgba(99, 102, 241, 0.1)",
                 color: "var(--color-primary)",
-                padding: "0.35rem 0.75rem",
+                padding: "0.3rem 0.75rem",
                 borderRadius: "20px",
-                fontSize: "0.75rem",
-                fontWeight: 600
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.3px"
               }}>
-                📁 {currentQuestion.category}
+                {currentQuestion.category}
               </span>
-              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                Depto: {department}
+              <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                Departamento: {department}
               </span>
             </div>
           </div>
 
-          {/* Texto de Pregunta */}
+          {/* Texto de la pregunta */}
           <div style={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem 0" }}>
             <h3 style={{
-              fontSize: "1.4rem",
-              fontWeight: 600,
-              textAlign: "center",
-              lineHeight: "1.4",
+              fontSize: "1.35rem", fontWeight: 600,
+              textAlign: "center", lineHeight: "1.45",
               maxWidth: "580px"
             }}>
               {currentQuestion.text}
             </h3>
           </div>
 
-          {/* Opciones de Rating */}
+          {/* Opciones de calificación — colores semánticos sin emojis */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(5, 1fr)",
-            gap: "0.75rem",
+            gap: "0.65rem",
             width: "100%"
           }} className="rating-grid">
             {ratingOptions.map((opt) => {
@@ -162,46 +156,75 @@ export const ClimateChatbot = () => {
                   key={opt.value}
                   onClick={() => handleRatingSelect(opt.value)}
                   className={`rating-btn ${isSelected ? "selected" : ""}`}
+                  title={opt.label}
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "0.5rem",
-                    padding: "1rem 0.5rem",
+                    gap: "0.6rem",
+                    padding: "1rem 0.4rem",
                     borderRadius: "14px",
-                    background: isSelected ? `${opt.color}20` : "rgba(255,255,255,0.02)",
+                    background: isSelected ? `${opt.color}18` : "rgba(255,255,255,0.02)",
                     border: isSelected ? `2px solid ${opt.color}` : "1px solid var(--border-color)",
                     cursor: "pointer",
                     transition: "all var(--transition-fast)"
                   }}
-                  title={opt.label}
                 >
-                  <span style={{ fontSize: "2rem" }}>{opt.emoji}</span>
+                  {/* Círculo de color en lugar del emoji */}
+                  <div style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    background: isSelected ? opt.color : `${opt.color}30`,
+                    border: `2px solid ${isSelected ? opt.color : `${opt.color}50`}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all var(--transition-fast)"
+                  }}>
+                    <span style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      color: isSelected ? "white" : opt.textColor
+                    }}>
+                      {opt.value}
+                    </span>
+                  </div>
+
+                  {/* Etiqueta corta */}
                   <span className="rating-label" style={{
-                    fontSize: "0.7rem",
+                    fontSize: "0.65rem",
                     textAlign: "center",
-                    fontWeight: 600,
-                    color: isSelected ? "white" : "var(--text-secondary)"
-                  }}>{opt.label}</span>
+                    fontWeight: 700,
+                    lineHeight: 1.2,
+                    color: isSelected ? opt.textColor : "var(--text-muted)"
+                  }}>
+                    {opt.shortLabel}
+                  </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Navegación inferior */}
+          {/* Leyenda completa debajo del grid */}
           <div style={{
             display: "flex",
             justifyContent: "space-between",
-            marginTop: "1.5rem",
-            paddingTop: "1rem",
-            borderTop: "1px solid var(--border-color)"
+            fontSize: "0.68rem",
+            color: "var(--text-muted)",
+            padding: "0 0.25rem"
           }}>
-            <button
-              onClick={prevStep}
-              className="btn btn-secondary"
-              style={{ padding: "0.6rem 1.2rem" }}
-            >
+            <span style={{ color: ratingOptions[0].color, fontWeight: 600 }}>{ratingOptions[0].label}</span>
+            <span style={{ color: ratingOptions[4].color, fontWeight: 600 }}>{ratingOptions[4].label}</span>
+          </div>
+
+          {/* Navegación */}
+          <div style={{
+            display: "flex", justifyContent: "space-between",
+            paddingTop: "1rem", borderTop: "1px solid var(--border-color)"
+          }}>
+            <button onClick={prevStep} className="btn btn-secondary" style={{ padding: "0.6rem 1.2rem" }}>
               <ChevronLeft size={16} /> Atrás
             </button>
             <button
@@ -216,126 +239,75 @@ export const ClimateChatbot = () => {
         </div>
       )}
 
-      {/* 3. Pantalla de Comentario Opcional */}
+      {/* ── 3. Comentario opcional ───────────────────────────────────── */}
       {currentStep === totalQuestions + 1 && (
         <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", flexGrow: 1 }}>
           <div>
             <h3 style={{ fontSize: "1.35rem", fontWeight: 700 }} className="gradient-text-indigo">
-              ¿Hay algo más que quieras compartir?
+              Comentarios adicionales (opcional)
             </h3>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
-              Tus sugerencias ayudan al equipo directivo a enfocar mejor las iniciativas de mejora. Este comentario es totalmente opcional.
+              Tus sugerencias ayudan al equipo directivo a enfocar mejor las iniciativas de mejora.
             </p>
           </div>
-
           <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Escribe aquí de forma libre y honesta tus sugerencias o inquietudes..."
+              placeholder="Escribe aquí de forma libre tus sugerencias o inquietudes..."
               style={{
-                width: "100%",
-                flexGrow: 1,
-                minHeight: "150px",
-                background: "var(--bg-input)",
-                border: "1px solid var(--border-color)",
-                borderRadius: "12px",
-                padding: "1rem",
-                color: "white",
-                fontFamily: "inherit",
-                fontSize: "0.95rem",
-                resize: "none",
-                outline: "none"
+                width: "100%", flexGrow: 1, minHeight: "150px",
+                background: "var(--bg-input)", border: "1px solid var(--border-color)",
+                borderRadius: "12px", padding: "1rem", color: "white",
+                fontFamily: "inherit", fontSize: "0.95rem", resize: "none", outline: "none"
               }}
               maxLength={400}
             />
-            <span style={{ alignSelf: "flex-end", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+            <span style={{ alignSelf: "flex-end", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
               {comment.length} / 400 caracteres
             </span>
           </div>
-
-          <div style={{
-            display: "flex",
-            justifyContent: "space-between",
-            borderTop: "1px solid var(--border-color)",
-            paddingTop: "1rem"
-          }}>
-            <button
-              onClick={prevStep}
-              className="btn btn-secondary"
-            >
+          <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+            <button onClick={prevStep} className="btn btn-secondary">
               <ChevronLeft size={16} /> Atrás
             </button>
-            <button
-              onClick={submitSurvey}
-              disabled={isSubmitting}
-              className="btn btn-emerald"
-            >
-              {isSubmitting ? "Enviando..." : (
-                <>Enviar Encuesta <Send size={14} /></>
-              )}
+            <button onClick={submitSurvey} disabled={isSubmitting} className="btn btn-emerald">
+              {isSubmitting ? "Enviando..." : <><Send size={14} /> Enviar Encuesta</>}
             </button>
           </div>
         </div>
       )}
 
-      {/* 4. Pantalla de Éxito / Finalizado */}
+      {/* ── 4. Pantalla de éxito ─────────────────────────────────────── */}
       {currentStep === totalQuestions + 2 && (
         <div className="animate-fade-in" style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          gap: "1.5rem",
-          padding: "2rem 0",
-          flexGrow: 1
+          display: "flex", flexDirection: "column", alignItems: "center",
+          justifyContent: "center", textAlign: "center", gap: "1.5rem",
+          padding: "2rem 0", flexGrow: 1
         }}>
           <div style={{
-            width: "72px",
-            height: "72px",
-            borderRadius: "50%",
-            background: "rgba(16, 185, 129, 0.1)",
-            color: "var(--color-secondary)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.2)",
-            marginBottom: "0.5rem"
+            width: "72px", height: "72px", borderRadius: "50%",
+            background: "rgba(16, 185, 129, 0.1)", color: "var(--color-secondary)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.2)"
           }}>
             <CheckCircle size={36} />
           </div>
-
           <div>
             <h2 style={{ fontSize: "1.75rem", fontWeight: 800 }} className="gradient-text-emerald">
-              ¡Muchas gracias!
+              Encuesta completada
             </h2>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", maxWidth: "420px", margin: "0.5rem auto 0" }}>
-              Tus respuestas anónimas han sido registradas. Los resultados agregados serán calculados en tiempo real para el análisis del equipo de Recursos Humanos.
+              Tus respuestas anónimas han sido registradas. Los resultados agregados estarán disponibles de forma inmediata en el Dashboard de RRHH.
             </p>
           </div>
-
-          <div style={{
-            display: "flex",
-            gap: "1rem",
-            marginTop: "1rem",
-            width: "100%",
-            justifyContent: "center"
-          }}>
-            <button
-              onClick={resetSurvey}
-              className="btn btn-secondary"
-              style={{ width: "160px" }}
-            >
+          <div style={{ display: "flex", gap: "1rem", marginTop: "1rem", justifyContent: "center" }}>
+            <button onClick={resetSurvey} className="btn btn-secondary" style={{ width: "160px" }}>
               Nueva Encuesta
             </button>
             <a
               href="/dashboard"
-              onClick={(e) => {
-                e.preventDefault();
-                // Navegar programáticamente usando React Router o recarga si es necesario
-                window.location.href = "/dashboard";
-              }}
+              onClick={(e) => { e.preventDefault(); window.location.href = "/dashboard"; }}
               className="btn btn-primary"
               style={{ width: "180px", textDecoration: "none" }}
             >
@@ -352,28 +324,20 @@ export const ClimateChatbot = () => {
           transform: translateX(4px);
         }
         .rating-btn:hover:not(.selected) {
-          background: rgba(255, 255, 255, 0.06) !important;
+          background: rgba(255, 255, 255, 0.05) !important;
           border-color: var(--border-color-hover) !important;
           transform: translateY(-2px);
         }
-        .rating-btn.selected {
-          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.02);
-          transform: translateY(-2px);
-        }
+        .rating-btn.selected { transform: translateY(-2px); }
         @media (max-width: 600px) {
-          .rating-grid {
-            grid-template-columns: 1fr !important;
-          }
+          .rating-grid { grid-template-columns: 1fr !important; }
           .rating-btn {
             flex-direction: row !important;
             justify-content: flex-start !important;
             padding: 0.75rem 1rem !important;
-            gap: 1rem !important;
+            gap: 0.75rem !important;
           }
-          .rating-label {
-            text-align: left !important;
-            font-size: 0.85rem !important;
-          }
+          .rating-label { text-align: left !important; font-size: 0.8rem !important; }
         }
       `}</style>
     </div>

@@ -31,9 +31,9 @@ export const LegalChatbot = () => {
             <ShieldCheck size={24} />
           </div>
           <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 700 }}>Asesor Laboral de Recursos Humanos</h3>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 700 }}>HR Legal Assistant</h3>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-              Consulta información clave sobre el Código de Trabajo y políticas de la empresa de forma ágil.
+              Asistente virtual especializado exclusivamente en el Código de Trabajo vigente.
             </p>
           </div>
         </div>

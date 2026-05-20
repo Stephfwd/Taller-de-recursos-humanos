@@ -4,7 +4,7 @@ import { queryLaborConsultant } from "../services/antigravity";
 const WELCOME_MESSAGE = {
   id: "welcome",
   sender: "bot",
-  text: "¡Hola! Soy tu **Consultor Laboral Inteligente** de Recursos Humanos. 💼\n\n¿En qué te puedo asesorar hoy? Puedes consultarme sobre tus vacaciones, horas extra, aguinaldo, incapacidades, licencias de maternidad o qué hacer en caso de despido o renuncia.",
+  text: "¡Hola! Soy **HR Legal Assistant**, tu asistente virtual especializado exclusivamente en el Código de Trabajo. 💼\n\n¿En qué te puedo asesorar hoy? Puedes consultarme sobre tus vacaciones, horas extra, aguinaldo, incapacidades, licencias de maternidad o causales de despido. Recuerda que solo respondo preguntas basadas en la legislación laboral vigente.",
   timestamp: new Date().toISOString()
 };
 

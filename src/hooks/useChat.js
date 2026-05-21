@@ -1,16 +1,31 @@
-import { useState, useCallback } from "react";
-import { queryLaborConsultant } from "../services/antigravity";
+import { useState, useCallback, useEffect } from "react";
+import { queryLaborConsultantAI } from "../services/groqService";
 
 const WELCOME_MESSAGE = {
   id: "welcome",
   sender: "bot",
-  text: "¡Hola! 👋 Soy **HR Legal Assistant**, tu asistente virtual de Recursos Humanos especializado en el **Código de Trabajo**.\n\nEstoy aquí para orientarte sobre tus derechos y obligaciones laborales con base en la legislación vigente. Puedes consultarme sobre:\n\n- 🌴 **Vacaciones** y días de descanso\n- ⏰ **Jornadas laborales** y horas extra\n- 💰 **Salario, aguinaldo** y liquidaciones\n- 🏥 **Permisos e incapacidades**\n- 👶 **Maternidad y paternidad**\n- 📄 **Contratos y causales de despido**\n\n¿Cuál es tu consulta laboral hoy?",
+  text: "¡Hola! 👋 Soy el **HR Legal Assistant**, impulsado por IA.\n\nEstoy entrenado específicamente con los manuales y el código de trabajo de la empresa (Ej: Código de Vestimenta, Políticas Familiares, etc).\n\n¿En qué te puedo ayudar hoy con base en nuestras normativas?",
   timestamp: new Date().toISOString()
 };
 
 export const useChat = () => {
   const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [isTyping, setIsTyping] = useState(false);
+  const [pdfContext, setPdfContext] = useState("");
+
+  // Cargar el contexto extraído de los PDFs en el montaje del hook
+  useEffect(() => {
+    fetch("/pdf-context.json")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.documents) {
+          const combinedText = data.documents.map(d => `--- DOCUMENTO: ${d.name} ---\n${d.text}`).join("\n\n");
+          setPdfContext(combinedText);
+          console.log("Contexto PDF cargado exitosamente. Documentos:", data.documents.map(d => d.name));
+        }
+      })
+      .catch(err => console.error("Error cargando el contexto PDF:", err));
+  }, []);
 
   const sendMessage = useCallback(async (text) => {
     if (!text || text.trim() === "") return;
@@ -26,7 +41,8 @@ export const useChat = () => {
     setIsTyping(true);
 
     try {
-      const response = await queryLaborConsultant(text);
+      // Llamada a la IA usando el contexto de los PDFs
+      const response = await queryLaborConsultantAI(text, pdfContext);
       
       const botMsg = {
         id: `bot_${Date.now()}`,
@@ -34,20 +50,18 @@ export const useChat = () => {
         text: response.text,
         timestamp: new Date().toISOString(),
         metadata: {
-          matchedTopicId: response.matchedTopicId,
-          article: response.article,
-          escalated: response.escalated || false
+          success: response.success
         }
       };
 
       setMessages((prev) => [...prev, botMsg]);
     } catch (error) {
-      console.error("Error sending message to simulator:", error);
+      console.error("Error en el chat:", error);
       
       const errMsg = {
         id: `bot_err_${Date.now()}`,
         sender: "bot",
-        text: "Hubo un error de conexión al consultar el Código de Trabajo. Por favor, intenta de nuevo.",
+        text: "Hubo un error de conexión con la inteligencia artificial. Por favor, intenta de nuevo.",
         timestamp: new Date().toISOString()
       };
 
@@ -55,7 +69,7 @@ export const useChat = () => {
     } finally {
       setIsTyping(false);
     }
-  }, []);
+  }, [pdfContext]);
 
   const clearChat = useCallback(() => {
     setMessages([WELCOME_MESSAGE]);
@@ -63,12 +77,9 @@ export const useChat = () => {
   }, []);
 
   const quickReplies = [
-    { text: "¿Cuántos días de vacaciones me corresponden?",          label: "Vacaciones" },
-    { text: "¿Cómo se pagan las horas extra?",                       label: "Horas Extra" },
-    { text: "¿Cómo se calcula mi aguinaldo?",                        label: "Aguinaldo" },
-    { text: "¿Cuáles son mis derechos ante un despido sin justa causa?", label: "Despido" },
-    { text: "¿Cuáles son mis derechos por licencia de maternidad?",  label: "Maternidad" },
-    { text: "¿Cuántas horas diarias puede durar mi jornada de trabajo?", label: "Jornada" }
+    { text: "¿Cuál es el código de vestimenta permitido?", label: "Vestimenta" },
+    { text: "¿Cuáles son las políticas para familias?", label: "Políticas Familiares" },
+    { text: "¿Qué pasa si falto al código de vestimenta?", label: "Sanciones Vestimenta" },
   ];
 
   return {

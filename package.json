@@ -10,7 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "groq-sdk": "^1.2.0",
     "lucide-react": "^1.16.0",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.3",
+    "pdfjs-dist": "^5.7.284",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-is": "^19.2.6",
